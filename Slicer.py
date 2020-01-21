@@ -50,8 +50,8 @@ class ImageToGcode():
                         if firingVal:
                             currentOffset = self.offsets
                             self.output += "G1X"+str(self.increment*column-currentOffset[0])+"Y"+str(y/12*self.spread-currentOffset[1])+"F"+str(self.feedrate)+"\n"
-                            self.output += "M400\n"
-                            self.output += "M700 S"+str(firingVal)+"\n"
+                            self.output += "G4P0\n"
+                            self.output += "M240S"+str(firingVal)+"\n"
                 #print(str(nozzleFirings))
                 nozzleFirings = [0 for x in range(0, self.img.cols)]
         f = open(self.outFile, 'w')
