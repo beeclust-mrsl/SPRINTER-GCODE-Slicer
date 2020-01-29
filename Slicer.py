@@ -33,8 +33,6 @@ class ImageToGcode():
         self.increment       = self.spread/self.nozzles
         self.rows, self.cols = self.img.shape
         
-        #self.test()
-
         self.terminalDebug()
         self.gcodeCreate()
 
@@ -75,18 +73,20 @@ class ImageToGcode():
                     
                     if firingVal:
                         
-                        self.output += "G1 X"+str(self.increment) + " Y" + str(y / 12 * self.spread) + " F" + str(self.feedrate) + "\n"
+                        self.output += "G1 X"+str(self.increment*column) + " Y" + str(y / 12 * self.spread) + " F" + str(self.feedrate) + "\n"
 
                         self.output += "G4 P0\n"
                         self.output += "M240"+ " S" +str(firingVal)+"\n"
                 
                 nozzleFirings = [0 for x in range(0, self.cols)]
 
+        self.output += "G1 X" + str(self.home[0]) + " Y" + str(self.home[1]) + "\n"
+        self.output += "G4 P0" + "\n"
+
         f = open(self.outFile, 'w')
         f.write(self.output)
         f.close()
-        #print(self.output)
-
+        
 
     def terminalDebug(self):
 
@@ -144,8 +144,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     imageProcessor = ImageToGcode(img = args.input,
-                                  origin = (args.origin),
-                                  home = (args.home),
+                                  origin = ast.literal_eval(args.origin),
+                                  home = ast.literal_eval(args.home),
                                   area = ast.literal_eval(args.area),
                                   feedrate = float(args.feedrate)
                                   )
