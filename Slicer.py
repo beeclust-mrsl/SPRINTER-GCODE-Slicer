@@ -1,5 +1,16 @@
 #! /usr/bin/env python
 
+#------------------------------------------------------------------------------#
+#   This code slices a greyscale bitmap image into SPRINTER GCODE.             #
+#                                                                              #
+#   Usage:              python Slicer.py [input] [origin] [home]               #
+#   Optional Arguments: --feedrate                                             #
+#                                                                              #
+#------------------------------------------------------------------------------#
+#   Author: Kedar Karpe (https://github.com/karpenet)                          #
+#   Copyright Beeclust - Multi Robot Systems Lab, 2020                         #
+#------------------------------------------------------------------------------#
+
 import os
 import sys
 import cv2
@@ -37,16 +48,23 @@ class ImageToGcode():
         self.gcodeCreate()
 
 
+#------------------------------------------------------------------------------#
+#   Refer GCODE Documentation at https://reprap.org/wiki/G-code                #
+#                                                                              #
+#   * Start by setting initial position of robot using G92.                    #
+#   * Linear move to 'home cell':    G1                                        #
+#   * Wait for move to complete:     G4 P0                                     #
+#   * Wait for another 2 seconds:    G4 P2000                                  #
+#   * Move to (X,Y) with feedrate F: G1 Xxxx Yxxx Fxxx                         #
+#   * Wait till move is complete:    G4 P0                                     #
+#   * Fire inkjet nozzle:            M240 Sxxx                                 #
+#   * Linear move to 'home cell':    G1                                        #
+#   * Wait for move to complete:     G4 P0                                     #
+#                                                                              #
+#   Sets every 'column-th' bit of nozzle(12 bits + 4 extra) to true.           #
+#------------------------------------------------------------------------------#
+
     def gcodeCreate(self):
-
-        '''
-        Refer GCODE Documentation at https://reprap.org/wiki/G-code
-
-        * Start by setting initial position of robot using G92.
-        * Then send move to 'home cell' command using G1: Linear Move.
-        * Wait for move to complete:  G4 P0.
-        * Wait for another 2 seconds: G4 P2000.
-        '''
 
         self.output += "G92 X" + str(self.origin[0]) + " Y" + str(self.origin[1]) + "\n"
         self.output += "G1 X" + str(self.home[0]) + " Y" + str(self.home[1]) + "\n"
@@ -86,7 +104,7 @@ class ImageToGcode():
         f = open(self.outFile, 'w')
         f.write(self.output)
         f.close()
-        
+
 
     def terminalDebug(self):
 
